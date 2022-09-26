@@ -1,3 +1,4 @@
+from django.core.validators import validate_slug
 from django.db import models
 
 
@@ -29,10 +30,11 @@ class Tag(models.Model):
     color = models.CharField(
         'Цвет в формате HEX',
         max_length=7,
+        default='#FFFFFF',
         unique=True
     )
     slug = models.SlugField(
-        'Уникальный slug тэга',
+        'Уникальный слаг тэга',
         max_length=200,
         unique=True
     )
