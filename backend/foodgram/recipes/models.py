@@ -46,3 +46,37 @@ class Tag(models.Model):
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
         ordering = ['name']
+
+
+class Recipe(models.Model):
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='IngredientsRecipe'
+    )
+    tags = models.ManyToManyField(Tag)
+    name = models.CharField(
+        'Название рецепта',
+        max_length=200,
+    )
+    text = models.TextField(
+        'Описание рецепта',
+    )
+    cooking_time = models.PositiveSmallIntegerField(
+        'Время приготовления',
+        default=0
+    )
+
+
+class IngredientsRecipe(models.Model):
+    ingredients = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE
+    )
+    amount = models.PositiveSmallIntegerField(
+        'Количество',
+        default=0
+    )

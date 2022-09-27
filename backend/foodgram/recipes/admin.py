@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Ingredient, Tag
+from .models import Ingredient, IngredientsRecipe, Recipe, Tag
 
 
 @admin.register(Ingredient)
@@ -17,3 +17,16 @@ class AdminTag(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('color',)
     empty_value_display = '-пусто-'
+
+
+@admin.register(Recipe)
+class AdminRecipe(admin.ModelAdmin):
+    list_display = ()
+    search_fields = ('name',)
+    list_filter = ('name',)
+    empty_value_display = '-пусто-'
+
+
+@admin.register(IngredientsRecipe)
+class AdminIngredintsRecipe(admin.ModelAdmin):
+    pass
