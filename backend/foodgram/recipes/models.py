@@ -1,4 +1,4 @@
-from django.core.validators import MinLengthValidator, validate_slug
+from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
 
 MAX_LENGTH = 200
@@ -44,17 +44,35 @@ class Tag(models.Model):
         'Название тэга',
         max_length=MAX_LENGTH,
         unique=True,
+        validators=[
+            MinLengthValidator(
+                MIN_LENGTH,
+                MIN_LENGTH_ERR_MSG
+            )
+        ]
     )
     color = models.CharField(
         'Цвет в формате HEX',
         max_length=7,
         default='#FFFFFF',
-        unique=True
+        unique=True,
+        validators=[
+            RegexValidator(
+                '^#([a-fA-F0-9]{6})$',
+                'Используйте цифры и латинские символы: a-f и A-F. Пример: #A123FFA'
+            )
+        ]
     )
     slug = models.SlugField(
         'Уникальный слаг тэга',
         max_length=MAX_LENGTH,
-        unique=True
+        unique=True,
+        validators=[
+            MinLengthValidator(
+                MIN_LENGTH,
+                MIN_LENGTH_ERR_MSG
+            )
+        ]
     )
 
     def __str__(self):
