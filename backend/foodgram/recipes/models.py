@@ -2,8 +2,7 @@ from email import message
 from unicodedata import name
 
 from django.core.validators import (MaxValueValidator, MinLengthValidator,
-                                    MinValueValidator, RegexValidator,
-                                    int_list_validator)
+                                    MinValueValidator, RegexValidator)
 from django.db import models
 
 MAX_LENGTH = 200
