@@ -1,15 +1,33 @@
-from django.core.validators import validate_slug
+from django.core.validators import MinLengthValidator, validate_slug
 from django.db import models
+
+MAX_LENGTH = 200
+MIN_LENGTH = 3
+MIN_LENGTH_ERR_MSG = f'Введите не менее {MIN_LENGTH} символов.'
 
 
 class Ingredient(models.Model):
     name = models.CharField(
         'Название ингредиента',
-        max_length=200
+        max_length=MAX_LENGTH,
+        help_text=f'Название ингредиента, не менее {MIN_LENGTH} символов.',
+        validators=[
+            MinLengthValidator(
+                MIN_LENGTH,
+                MIN_LENGTH_ERR_MSG
+            )
+        ]
     )
     measurement_unit = models.CharField(
         'Единица измерения',
-        max_length=200
+        max_length=MAX_LENGTH,
+        help_text='Обозначение единицы измерения, не менее 1-го символа.',
+        validators=[
+            MinLengthValidator(
+                1,
+                'Введите не менее 1-го символа.'
+            )
+        ]
     )
 
     def __str__(self):
@@ -24,8 +42,8 @@ class Ingredient(models.Model):
 class Tag(models.Model):
     name = models.CharField(
         'Название тэга',
-        max_length=200,
-        unique=True
+        max_length=MAX_LENGTH,
+        unique=True,
     )
     color = models.CharField(
         'Цвет в формате HEX',
@@ -35,7 +53,7 @@ class Tag(models.Model):
     )
     slug = models.SlugField(
         'Уникальный слаг тэга',
-        max_length=200,
+        max_length=MAX_LENGTH,
         unique=True
     )
 
@@ -56,7 +74,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(Tag)
     name = models.CharField(
         'Название рецепта',
-        max_length=200,
+        max_length=MAX_LENGTH,
     )
     text = models.TextField(
         'Описание рецепта',
@@ -65,6 +83,13 @@ class Recipe(models.Model):
         'Время приготовления',
         default=0
     )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
 
 class IngredientsRecipe(models.Model):
@@ -80,3 +105,6 @@ class IngredientsRecipe(models.Model):
         'Количество',
         default=0
     )
+
+    def __str__(self):
+        return f'{self.recipe} {self.ingredients}'
