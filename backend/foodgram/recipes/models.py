@@ -1,6 +1,3 @@
-from email import message
-from unicodedata import name
-
 from django.core.validators import (MaxValueValidator, MinLengthValidator,
                                     MinValueValidator, RegexValidator)
 from django.db import models
