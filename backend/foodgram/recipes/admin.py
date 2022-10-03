@@ -21,7 +21,7 @@ class AdminTag(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class AdminRecipe(admin.ModelAdmin):
-    list_display = ()
+    list_display = ('pk', 'name', 'text', 'cooking_time',)
     search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
@@ -29,4 +29,4 @@ class AdminRecipe(admin.ModelAdmin):
 
 @admin.register(IngredientsRecipe)
 class AdminIngredintsRecipe(admin.ModelAdmin):
-    pass
+    list_display = ('pk', 'recipe', 'ingredients', 'amount')
