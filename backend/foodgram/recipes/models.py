@@ -1,4 +1,9 @@
-from django.core.validators import MinLengthValidator, RegexValidator
+from email import message
+from unicodedata import name
+
+from django.core.validators import (MaxValueValidator, MinLengthValidator,
+                                    MinValueValidator, RegexValidator,
+                                    int_list_validator)
 from django.db import models
 
 MAX_LENGTH = 200
@@ -113,16 +118,33 @@ class Recipe(models.Model):
 class IngredientsRecipe(models.Model):
     ingredients = models.ForeignKey(
         Ingredient,
-        on_delete=models.CASCADE
+        related_name='ingredients_recipe',
+        on_delete=models.CASCADE,
     )
     recipe = models.ForeignKey(
         Recipe,
+        related_name='ingredients_recipe',
         on_delete=models.CASCADE
     )
     amount = models.PositiveSmallIntegerField(
         'Количество',
-        default=0
+        default=1,
+        validators=[
+            MinValueValidator(
+                1,
+                'Введите значение больше 1'
+            ),
+            MaxValueValidator(
+                20000,
+                'Введите значение меньше 20000'
+            ),
+        ]
     )
 
     def __str__(self):
-        return f'{self.recipe} {self.ingredients}'
+        return self.ingredients
+
+    class Meta:
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецептах'
+        ordering = ['recipe', ]
