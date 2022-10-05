@@ -1,6 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.core.validators import (MaxValueValidator, MinLengthValidator,
                                     MinValueValidator, RegexValidator)
 from django.db import models
+
+User = get_user_model()
 
 MAX_LENGTH = 200
 MIN_LENGTH = 3
@@ -100,7 +103,27 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',
-        default=0
+        default=1
+    )
+    author = models.ForeignKey(
+        User,
+        verbose_name='Автор',
+        related_name='recipes',
+        on_delete=models.CASCADE
+    )
+    favorite = models.ManyToManyField(
+        User,
+        verbose_name='Избранные рецепты',
+        related_name='favorites',
+    )
+    shop_list = models.ManyToManyField(
+        User,
+        verbose_name='Список покупок',
+        related_name='shop_list',
+    )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True
     )
 
     def __str__(self):
