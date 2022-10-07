@@ -1,7 +1,7 @@
 import json
 
 from django.core.management import BaseCommand
-from recipes.models import Ingredients
+from recipes.models import Ingredient
 
 ALREDY_LOADED_ERROR_MESSAGE = """
 Если вам нужно перезагрузить данные из json-файла,
@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        if Ingredients.objects.exists():
+        if Ingredient.objects.exists():
             print(ALREDY_LOADED_ERROR_MESSAGE)
             return
 
@@ -23,6 +23,6 @@ class Command(BaseCommand):
         with open('../../data/ingredients.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
             for dict in data:
-                Ingredients.objects.create(
+                Ingredient.objects.get_or_create(
                     name=dict['name'], measurement_unit=dict['measurement_unit'])
             print("Данные загружены")
