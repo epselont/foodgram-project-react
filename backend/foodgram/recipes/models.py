@@ -126,6 +126,13 @@ class Recipe(models.Model):
         auto_now_add=True
     )
 
+    image = models.ImageField(
+        verbose_name='Изображение рецепта',
+        upload_to='recipe/images/',
+        null=True,
+        default=None
+    )
+
     def __str__(self):
         return self.name
 
