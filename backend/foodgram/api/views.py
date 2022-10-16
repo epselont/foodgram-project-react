@@ -1,11 +1,14 @@
-from recipes.models import Ingredient, Recipe, Tag, User
+from django.contrib.auth import get_user_model
+from recipes.models import Ingredient, IngredientsRecipe, Recipe, Tag
 from rest_framework import viewsets
 
 from .serializers import (IngredientSerializer, RecipeSerializer,
                           TagSerializer, UserSerializer)
 
+User = get_user_model()
 
-class IngredientViewSet(viewsets.ModelViewSet):
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
 
