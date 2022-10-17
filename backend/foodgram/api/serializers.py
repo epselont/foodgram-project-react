@@ -17,12 +17,6 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name')
-
-
 class IngredientsRecipeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='ingredients.id')
     name = serializers.CharField(source='ingredients.name', read_only=True)

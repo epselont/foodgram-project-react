@@ -73,6 +73,9 @@ class User(AbstractUser):
         symmetrical=False
     )
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password']
+
     def __str__(self):
         return f'{self.username}'
 
