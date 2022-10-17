@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from djoser.serializers import UserSerializer
 from recipes.models import Ingredient, IngredientsRecipe, Recipe, Tag
 from rest_framework import serializers
 
