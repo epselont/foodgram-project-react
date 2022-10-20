@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
-from djoser.serializers import UserSerializer
+from djoser.serializers import UserSerializer as DjoserUserSerializer
+from drf_extra_fields.fields import Base64ImageField
 from recipes.models import Ingredient, IngredientsRecipe, Recipe, Tag
 from rest_framework import serializers
 
@@ -16,6 +17,27 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('__all__')
+
+
+class UserSerializer(DjoserUserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed'
+        )
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if not user.is_authenticated:
+            return False
+        return user.follower.filter(id=obj.id).exists()
 
 
 class IngredientsRecipeSerializer(serializers.ModelSerializer):
@@ -62,3 +84,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         if not user.is_authenticated:
             return False
         return user.shop_list.filter(id=obj.id).exists()
+
+
+class RecipeCreateSerializer(serializers.ModelSerializer):
+    pass
