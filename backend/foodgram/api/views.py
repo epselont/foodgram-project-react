@@ -28,7 +28,7 @@ class UserViewSet(DjoserViewSet):
     @action(methods=['GET'], detail=False)
     def subscriptions(self, request):
         user = request.user
-        pages = self.paginate_queryset(user.follower.all())
+        pages = self.paginate_queryset(user.subscribe.all())
         serializer = UserSerializer(
             pages, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
@@ -37,7 +37,7 @@ class UserViewSet(DjoserViewSet):
     def subscribe(self, request, **kwargs):
         user = request.user
         follow = get_object_or_404(User, id=kwargs.get('id'))
-        already_subscribe = user.follower.filter(id=follow.id).exists()
+        already_subscribe = user.subscribe.filter(id=follow.id).exists()
         serializer = UserSerializer(follow, context={'request': request})
         if user == follow or (
             request.method == 'DELETE' and not already_subscribe
@@ -56,10 +56,10 @@ class UserViewSet(DjoserViewSet):
                     },
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            user.follower.add(follow)
+            user.subscribe.add(follow)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
-            user.follower.remove(follow)
+            user.subscribe.remove(follow)
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 

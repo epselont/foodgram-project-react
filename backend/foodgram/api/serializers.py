@@ -37,7 +37,7 @@ class UserSerializer(DjoserUserSerializer):
         user = self.context.get('request').user
         if not user.is_authenticated:
             return False
-        return user.follower.filter(id=obj.id).exists()
+        return user.subscribe.filter(id=obj.id).exists()
 
 
 class IngredientsRecipeSerializer(serializers.ModelSerializer):
