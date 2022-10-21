@@ -28,10 +28,10 @@ class UserViewSet(DjoserViewSet):
     @action(methods=['GET'], detail=False)
     def subscriptions(self, request):
         user = request.user
-        following = user.follower.all()
+        pages = self.paginate_queryset(user.follower.all())
         serializer = UserSerializer(
-            following, many=True, context={'request': request})
-        return Response(serializer.data)
+            pages, many=True, context={'request': request})
+        return self.get_paginated_response(serializer.data)
 
     @action(methods=['POST', "DELETE"], detail=True)
     def subscribe(self, request, **kwargs):
