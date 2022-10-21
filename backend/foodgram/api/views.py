@@ -19,10 +19,10 @@ class UserViewSet(DjoserViewSet):
     serializer_class = UserSerializer
 
     def get_permissions(self):
-        if self.action == ('me' or 'subscriptions' or 'subscribe'):
-            self.permission_classes = IsAuthenticated
+        if self.action in ['me', 'subscriptions', 'subscribe']:
+            self.permission_classes = [IsAuthenticated, ]
         elif self.action == 'GET':
-            self.permission_classes = AllowAny
+            self.permission_classes = [AllowAny, ]
         return super().get_permissions()
 
     @action(methods=['GET'], detail=False)
