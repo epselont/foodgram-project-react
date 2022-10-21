@@ -66,7 +66,7 @@ class User(AbstractUser):
         ]
     )
 
-    follower = models.ManyToManyField(
+    subscribe = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         verbose_name='Подписка на автора',
         blank=True,
