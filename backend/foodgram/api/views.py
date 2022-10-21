@@ -9,7 +9,7 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 
 from .serializers import (IngredientSerializer, RecipeSerializer,
-                          TagSerializer, UserSerializer)
+                          SubscribeSerializer, TagSerializer, UserSerializer)
 
 User = get_user_model()
 
@@ -29,7 +29,7 @@ class UserViewSet(DjoserViewSet):
     def subscriptions(self, request):
         user = request.user
         pages = self.paginate_queryset(user.subscribe.all())
-        serializer = UserSerializer(
+        serializer = SubscribeSerializer(
             pages, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
@@ -38,7 +38,7 @@ class UserViewSet(DjoserViewSet):
         user = request.user
         follow = get_object_or_404(User, id=kwargs.get('id'))
         already_subscribe = user.subscribe.filter(id=follow.id).exists()
-        serializer = UserSerializer(follow, context={'request': request})
+        serializer = SubscribeSerializer(follow, context={'request': request})
         if user == follow or (
             request.method == 'DELETE' and not already_subscribe
         ):
