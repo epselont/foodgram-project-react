@@ -132,3 +132,6 @@ dmypy.json
 
 # .idea
 .idea
+
+# Files
+user_data.json
