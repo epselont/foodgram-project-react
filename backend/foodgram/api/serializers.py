@@ -86,7 +86,51 @@ class RecipeSerializer(serializers.ModelSerializer):
         return user.shop_list.filter(id=obj.id).exists()
 
 
-class SubscribeReceptSerialzier(serializers.ModelSerializer):
+class RecipeCreateSerializer(RecipeSerializer):
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True
+    )
+    author = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+    ingredients = IngredientsRecipeSerializer(
+        source='ingredients_recipe',
+        many=True,
+    )
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        exclude = ['favorite', 'shop_list', 'pub_date']
+
+    def ingredients_create_update(self, ingredients, recipe):
+        pass
+
+    def save(self, validated_data):
+        ingredients = validated_data.pop('ingredients_recipe')
+        tags = validated_data.pop('tags')
+        return super().save(validated_data)
+
+    def validate(self, data):
+        ingredients = data.get('ingredients_recipe')
+        tags = data.get('tags')
+        if not ingredients:
+            raise serializers.ValidationError(
+                {
+                    'ingredients': 'Добавьте не менее 1-го ингредиента'
+                }
+            )
+        if not tags:
+            raise serializers.ValidationError(
+                {
+                    'ingredients': 'Добавьте не менее 1-го тэга'
+                }
+            )
+        return data
+# TODO разобраться с валидацией
+
+
+class SubscribeReceptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
@@ -116,12 +160,8 @@ class SubscribeSerializer(UserSerializer):
 
     def get_recipes(self, obj):
         recipes = Recipe.objects.filter(author=obj)
-        serializer = SubscribeReceptSerialzier(recipes, many=True)
+        serializer = SubscribeReceptSerializer(recipes, many=True)
         return serializer.data
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()
-
-
-class RecipeCreateSerializer(serializers.ModelSerializer):
-    pass

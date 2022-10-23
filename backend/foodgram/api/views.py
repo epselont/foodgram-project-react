@@ -8,8 +8,9 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from .serializers import (IngredientSerializer, RecipeSerializer,
-                          SubscribeSerializer, TagSerializer, UserSerializer)
+from .serializers import (IngredientSerializer, RecipeCreateSerializer,
+                          RecipeSerializer, SubscribeSerializer, TagSerializer,
+                          UserSerializer)
 
 User = get_user_model()
 
@@ -79,3 +80,16 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+
+    def get_serializer_class(self):
+        if self.request.method in ['POST', 'PATCH', 'PUT']:
+            return RecipeCreateSerializer
+        return RecipeSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data.update({'author': request.user.id})
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(serializer.validated_data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

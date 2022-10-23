@@ -97,6 +97,7 @@ class Recipe(models.Model):
     name = models.CharField(
         'Название рецепта',
         max_length=MAX_LENGTH,
+        unique=True,
     )
     text = models.TextField(
         'Описание рецепта',
