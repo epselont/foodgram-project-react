@@ -29,7 +29,7 @@ class AdminRecipe(admin.ModelAdmin):
 
 @admin.register(IngredientsRecipe)
 class AdminIngredintsRecipe(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredients', 'amount')
+    list_display = ('recipe', 'ingredient', 'amount')
     search_fields = ('recipe',)
     list_filter = ('recipe',)
     empty_value_display = '-пусто-'

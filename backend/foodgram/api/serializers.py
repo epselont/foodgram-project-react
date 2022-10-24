@@ -41,10 +41,10 @@ class UserSerializer(DjoserUserSerializer):
 
 
 class IngredientsRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source='ingredients.id')
-    name = serializers.CharField(source='ingredients.name', read_only=True)
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    name = serializers.CharField(source='ingredient.name', read_only=True)
     measurement_unit = serializers.CharField(
-        source='ingredients.measurement_unit',
+        source='ingredient.measurement_unit',
         read_only=True
     )
 
@@ -57,6 +57,11 @@ class IngredientsRecipeSerializer(serializers.ModelSerializer):
             'amount'
         )
 
+    def to_representation(self, instance):
+        data = IngredientSerializer(instance.ingredient).data
+        data['amount'] = instance.amount
+        return data
+
 
 class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
@@ -66,7 +71,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientsRecipeSerializer(
         source='ingredients_recipe',
         read_only=True,
-        many=True,
+        many=True
     )
 
     class Meta:
@@ -90,26 +95,47 @@ class RecipeCreateSerializer(RecipeSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
-    author = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all()
-    )
     ingredients = IngredientsRecipeSerializer(
         source='ingredients_recipe',
-        many=True,
+        many=True
     )
     image = Base64ImageField()
 
     class Meta:
         model = Recipe
         exclude = ['favorite', 'shop_list', 'pub_date']
+        read_only_fields = ['author', ]
 
-    def ingredients_create_update(self, ingredients, recipe):
-        pass
+    def ingredients_create(self, ingredients, recipe):
+        for ingredient in ingredients:
+            IngredientsRecipe.objects.get_or_create(
+                ingredient=ingredient['id'],
+                recipe=recipe,
+                amount=ingredient['amount']
+            )
 
-    def save(self, validated_data):
+    def create(self, validated_data):
         ingredients = validated_data.pop('ingredients_recipe')
         tags = validated_data.pop('tags')
-        return super().save(validated_data)
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        self.ingredients_create(
+            ingredients=ingredients,
+            recipe=recipe
+        )
+        return recipe
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags')
+        instance.tags.clear()
+        instance.tags.set(tags)
+        ingredients = validated_data.pop('ingredients_recipe')
+        instance.ingredients.clear()
+        self.ingredients_create(
+            ingredients=ingredients,
+            recipe=instance
+        )
+        return super().update(instance, validated_data)
 
     def validate(self, data):
         ingredients = data.get('ingredients_recipe')
@@ -127,7 +153,6 @@ class RecipeCreateSerializer(RecipeSerializer):
                 }
             )
         return data
-# TODO разобраться с валидацией
 
 
 class SubscribeReceptSerializer(serializers.ModelSerializer):
