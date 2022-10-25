@@ -8,9 +8,10 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from .serializers import (IngredientSerializer, RecipeCreateSerializer,
-                          RecipeSerializer, SubscribeSerializer, TagSerializer,
-                          UserSerializer)
+from .serializers import (IngredientSerializer, IngredientsRecipeSerializer,
+                          RecipeCreateSerializer, RecipeSerializer,
+                          SubscribeReceptSerializer, SubscribeSerializer,
+                          TagSerializer, UserSerializer)
 
 User = get_user_model()
 
@@ -88,3 +89,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    @action(methods=['POST', "DELETE"], detail=True)
+    def favorite(self, request, **kwargs):
+        recipe = get_object_or_404(Recipe, id=kwargs.get('pk'))
+        if request.method == 'POST':
+            serializer = SubscribeReceptSerializer(
+                recipe, context={'request': request}
+            )
+            request.user.favorites.add(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            request.user.favorites.remove(recipe)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

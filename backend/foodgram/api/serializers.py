@@ -41,7 +41,7 @@ class UserSerializer(DjoserUserSerializer):
 
 
 class IngredientsRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    id = serializers.IntegerField(source="ingredient.id")
     name = serializers.CharField(source='ingredient.name', read_only=True)
     measurement_unit = serializers.CharField(
         source='ingredient.measurement_unit',
@@ -56,11 +56,6 @@ class IngredientsRecipeSerializer(serializers.ModelSerializer):
             'measurement_unit',
             'amount'
         )
-
-    def to_representation(self, instance):
-        data = IngredientSerializer(instance.ingredient).data
-        data['amount'] = instance.amount
-        return data
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -109,7 +104,7 @@ class RecipeCreateSerializer(RecipeSerializer):
     def ingredients_create(self, ingredients, recipe):
         for ingredient in ingredients:
             IngredientsRecipe.objects.get_or_create(
-                ingredient=ingredient['id'],
+                ingredient_id=ingredient['ingredient']['id'],
                 recipe=recipe,
                 amount=ingredient['amount']
             )

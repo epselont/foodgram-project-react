@@ -169,9 +169,15 @@ class IngredientsRecipe(models.Model):
     )
 
     def __str__(self):
-        return f'{self.ingredients}'
+        return f'{self.ingredient}'
 
     class Meta:
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецептах'
         ordering = ['recipe', ]
+        constraints = (
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient', ],
+                name='unique_ingridient_for_recipe',
+            ),
+        )
