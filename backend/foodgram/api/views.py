@@ -103,3 +103,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
             request.user.favorites.remove(recipe)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['POST', "DELETE"], detail=True)
+    def shopping_cart(self, request, **kwargs):
+        recipe = get_object_or_404(Recipe, id=kwargs.get('pk'))
+        if request.method == 'POST':
+            serializer = SubscribeReceptSerializer(
+                recipe, context={'request': request}
+            )
+            request.user.shop_list.add(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            request.user.shop_list.remove(recipe)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
