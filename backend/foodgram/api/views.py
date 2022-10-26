@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet as DjoserViewSet
 from recipes.models import Ingredient, IngredientsRecipe, Recipe, Tag
@@ -117,3 +119,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
             request.user.shop_list.remove(recipe)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['GET'], detail=False)
+    def download_shopping_cart(self, request):
+        user = request.user
+        ingredients = user.shop_list.all().values_list(
+            'ingredients__name',
+            'ingredients__measurement_unit'
+        ).annotate(Sum('ingredients_recipe__amount'))
+        shop_list = ("Список покупок: \n\n")
+        for ingredient in ingredients:
+            shop_list += (
+                f'{ingredient[0].capitalize()} '
+                f'({ingredient[1]}) - '
+                f'{ingredient[2]}'
+            )
+        file_name = f'{user.email}_shop_list'
+        response = HttpResponse(
+            shop_list, content_type='text.txt; charset=utf-8'
+        )
+        response['Content-Disposition'] = (
+            f'attachment; filename={file_name}.txt'
+        )
+        return response
