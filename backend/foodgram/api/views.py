@@ -10,6 +10,7 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
+from .permissions import IsAdminOrAuthorOrReadOnly
 from .serializers import (IngredientSerializer, IngredientsRecipeSerializer,
                           RecipeCreateSerializer, RecipeSerializer,
                           SubscribeReceptSerializer, SubscribeSerializer,
@@ -83,6 +84,17 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+
+    def get_permissions(self):
+        if self.action in [
+            'create', 'shopping_cart', 'favorite', 'download_shopping_cart'
+        ]:
+            self.permission_classes = [IsAuthenticated, ]
+        elif self.action == ['update', 'destroy']:
+            self.permission_classes = [IsAdminOrAuthorOrReadOnly, ]
+        else:
+            self.permission_classes[AllowAny, ]
+        return super().get_permissions()
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH', 'PUT']:
