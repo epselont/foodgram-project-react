@@ -10,6 +10,9 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from api.pagination import LimitPageNumberPagination
+
+from .filters import IngredientFilter, RecipeFilter
 from .permissions import IsAdminOrAuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeSerializer, SubscribeReceptSerializer,
@@ -70,8 +73,7 @@ class UserViewSet(DjoserViewSet):
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('name',)
+    filterset_class = IngredientFilter
     pagination_class = None
 
 
@@ -84,6 +86,9 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    pagination_class = LimitPageNumberPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     def get_permissions(self):
         if self.action in [
@@ -144,7 +149,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             shop_list += (
                 f'{ingredient[0].capitalize()} '
                 f'({ingredient[1]}) - '
-                f'{ingredient[2]}'
+                f'{ingredient[2]}\n'
             )
         file_name = f'{user.email}_shop_list'
         response = HttpResponse(

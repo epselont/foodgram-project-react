@@ -60,7 +60,7 @@ class IngredientsRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
-    is_in_shoping_cart = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
     author = UserSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientsRecipeSerializer(
@@ -79,7 +79,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             return False
         return user.favorites.filter(id=obj.id).exists()
 
-    def get_is_in_shoping_cart(self, obj):
+    def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
         if not user.is_authenticated:
             return False
