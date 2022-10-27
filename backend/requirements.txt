@@ -7,3 +7,4 @@ requests==2.26.0
 drf-extra-fields==3.4.1
 djoser
 django-cors-headers
+django-filter

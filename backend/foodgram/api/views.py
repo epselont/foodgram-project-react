@@ -2,19 +2,18 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserViewSet
-from recipes.models import Ingredient, IngredientsRecipe, Recipe, Tag
+from recipes.models import Ingredient, Recipe, Tag
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .permissions import IsAdminOrAuthorOrReadOnly
-from .serializers import (IngredientSerializer, IngredientsRecipeSerializer,
-                          RecipeCreateSerializer, RecipeSerializer,
-                          SubscribeReceptSerializer, SubscribeSerializer,
-                          TagSerializer, UserSerializer)
+from .serializers import (IngredientSerializer, RecipeCreateSerializer,
+                          RecipeSerializer, SubscribeReceptSerializer,
+                          SubscribeSerializer, TagSerializer, UserSerializer)
 
 User = get_user_model()
 
@@ -71,6 +70,8 @@ class UserViewSet(DjoserViewSet):
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('name',)
     pagination_class = None
 
 
@@ -80,7 +81,6 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
 
 
-# TODO добавление в избраное, в список покупок; скачать список покупок
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
@@ -93,7 +93,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         elif self.action == ['update', 'destroy']:
             self.permission_classes = [IsAdminOrAuthorOrReadOnly, ]
         else:
-            self.permission_classes[AllowAny, ]
+            self.permission_classes = [AllowAny, ]
         return super().get_permissions()
 
     def get_serializer_class(self):
