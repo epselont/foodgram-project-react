@@ -3,20 +3,19 @@ from djoser.serializers import UserSerializer as DjoserUserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import Ingredient, IngredientsRecipe, Recipe, Tag
 from rest_framework import serializers
-
-User = get_user_model()
+from users.models import User
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class UserSerializer(DjoserUserSerializer):
@@ -35,9 +34,7 @@ class UserSerializer(DjoserUserSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
-        if not user.is_authenticated:
-            return False
-        return user.subscribe.filter(id=obj.id).exists()
+        return user.is_authenticated and user.subscribe.filter(id=obj.id).exists()
 
 
 class IngredientsRecipeSerializer(serializers.ModelSerializer):
@@ -71,19 +68,15 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        exclude = ['favorite', 'shop_list', 'pub_date']
+        exclude = ('favorite', 'shop_list', 'pub_date')
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
-        if not user.is_authenticated:
-            return False
-        return user.favorites.filter(id=obj.id).exists()
+        return user.is_authenticated and user.favorites.filter(id=obj.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
-        if not user.is_authenticated:
-            return False
-        return user.shop_list.filter(id=obj.id).exists()
+        return user.is_authenticated and user.shop_list.filter(id=obj.id).exists()
 
 
 class RecipeCreateSerializer(RecipeSerializer):
@@ -98,8 +91,8 @@ class RecipeCreateSerializer(RecipeSerializer):
 
     class Meta:
         model = Recipe
-        exclude = ['favorite', 'shop_list', 'pub_date']
-        read_only_fields = ['author', ]
+        exclude = ('favorite', 'shop_list', 'pub_date')
+        read_only_fields = ('author', )
 
     def ingredients_create(self, ingredients, recipe):
         for ingredient in ingredients:

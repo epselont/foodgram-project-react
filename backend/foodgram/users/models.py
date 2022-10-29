@@ -10,6 +10,9 @@ MIN_LENGTH_ERR_MSG = f'Введите не менее {MIN_LENGTH} символ�
 
 class User(AbstractUser):
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name', 'password')
+
     ROLES = [
         ('ADMIN', 'Администратор'),
         ('USER', 'Пользователь')
@@ -73,16 +76,10 @@ class User(AbstractUser):
         symmetrical=False
     )
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password']
-
-    def __str__(self):
-        return f'{self.username}'
-
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ['username']
+        ordering = ('username',)
 
     @property
     def is_admin(self):
@@ -91,3 +88,6 @@ class User(AbstractUser):
     @property
     def is_user(self):
         return self.role == 'USER'
+
+    def __str__(self):
+        return f'{self.username}'
