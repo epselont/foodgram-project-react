@@ -21,9 +21,13 @@ class Command(BaseCommand):
 
         print("Загрузка данных")
 
-        with open('../../data/ingredients.json', 'r', encoding='utf-8') as file:
+        with open(
+            '../../data/ingredients.json', 'r', encoding='utf-8'
+        ) as file:
             data = json.load(file)
             for dict in data:
                 Ingredient.objects.get_or_create(
-                    name=dict['name'], measurement_unit=dict['measurement_unit'])
+                    name=dict['name'],
+                    measurement_unit=dict['measurement_unit']
+                )
             print("Данные загружены")
