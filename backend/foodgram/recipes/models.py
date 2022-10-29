@@ -34,13 +34,13 @@ class Ingredient(models.Model):
         ]
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-        ordering = ['name']
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
 
 
 class Tag(models.Model):
@@ -79,13 +79,13 @@ class Tag(models.Model):
         ]
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
-        ordering = ['name']
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
 
 
 class Recipe(models.Model):
@@ -134,13 +134,13 @@ class Recipe(models.Model):
         default=None
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
+
+    def __str__(self):
+        return self.name
 
 
 class IngredientsRecipe(models.Model):
@@ -169,16 +169,16 @@ class IngredientsRecipe(models.Model):
         ]
     )
 
-    def __str__(self):
-        return f'{self.ingredient}'
-
     class Meta:
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецептах'
-        ordering = ['recipe', ]
+        ordering = ('recipe',)
         constraints = (
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient', ],
                 name='unique_ingridient_for_recipe',
             ),
         )
+
+    def __str__(self):
+        return f'{self.ingredient}'

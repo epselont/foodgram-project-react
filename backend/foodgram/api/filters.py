@@ -8,7 +8,7 @@ class IngredientFilter(FilterSet):
 
     class Meta:
         model = Ingredient
-        fields = ['name', ]
+        fields = ('name',)
 
 
 class RecipeFilter(FilterSet):
@@ -23,7 +23,7 @@ class RecipeFilter(FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['author', 'is_in_shopping_cart', 'is_favorited', 'tags']
+        fields = ('author', 'is_in_shopping_cart', 'is_favorited', 'tags')
 
     def filter_shopping_cart(self, queryset, name, value):
         if value == 1:

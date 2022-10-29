@@ -9,6 +9,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from users.models import User
 
 from api.pagination import LimitPageNumberPagination
 
@@ -18,18 +19,16 @@ from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeSerializer, SubscribeReceptSerializer,
                           SubscribeSerializer, TagSerializer, UserSerializer)
 
-User = get_user_model()
-
 
 class UserViewSet(DjoserViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
     def get_permissions(self):
-        if self.action in ['me', 'subscriptions', 'subscribe']:
-            self.permission_classes = [IsAuthenticated, ]
+        if self.action in ('me', 'subscriptions', 'subscribe'):
+            self.permission_classes = (IsAuthenticated,)
         elif self.action == 'GET':
-            self.permission_classes = [AllowAny, ]
+            self.permission_classes = (AllowAny,)
         return super().get_permissions()
 
     @action(methods=['GET'], detail=False)
@@ -91,18 +90,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_permissions(self):
-        if self.action in [
+        if self.action in (
             'create', 'shopping_cart', 'favorite', 'download_shopping_cart'
-        ]:
-            self.permission_classes = [IsAuthenticated, ]
-        elif self.action == ['update', 'destroy']:
-            self.permission_classes = [IsAdminOrAuthorOrReadOnly, ]
+        ):
+            self.permission_classes = (IsAuthenticated,)
+        elif self.action == ('update', 'destroy'):
+            self.permission_classes = (IsAdminOrAuthorOrReadOnly,)
         else:
-            self.permission_classes = [AllowAny, ]
+            self.permission_classes = (AllowAny,)
         return super().get_permissions()
 
     def get_serializer_class(self):
-        if self.request.method in ['POST', 'PATCH', 'PUT']:
+        if self.request.method in ('POST', 'PATCH', 'PUT'):
             return RecipeCreateSerializer
         return RecipeSerializer
 
