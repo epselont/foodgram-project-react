@@ -58,8 +58,8 @@ jobs:
           script: |
             cd infra/
             docker compose down -v
-            docker compose rmi ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
-            docker compose rmi ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
+            docker rmi ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
+            docker rmi ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
             docker compose pull ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
             docker compose pull ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
             rm .env
