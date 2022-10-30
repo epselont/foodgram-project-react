@@ -22,7 +22,7 @@ class Command(BaseCommand):
         print("Загрузка данных")
 
         with open(
-            '../../data/ingredients.json', 'r', encoding='utf-8'
+            './ingredients.json', 'r', encoding='utf-8'
         ) as file:
             data = json.load(file)
             for dict in data:
