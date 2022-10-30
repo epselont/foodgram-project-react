@@ -57,10 +57,11 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             cd infra/
-            docker compose stop
-            docker compose rm web
-            docker compose pull epselont/foodgram-backend:latest
-            docker compose pull epselont/foodgram-frontend:latest
+            docker compose down -v
+            docker compose rmi ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
+            docker compose rmi ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
+            docker compose pull ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
+            docker compose pull ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
             rm .env
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
